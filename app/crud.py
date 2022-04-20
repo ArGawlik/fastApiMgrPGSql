@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 
+def get_all_customers(db: Session):
+    return db.query(models.Customer).all()
+
+
 def get_shippers(db: Session):
     return db.query(models.Shipper).all()
 
