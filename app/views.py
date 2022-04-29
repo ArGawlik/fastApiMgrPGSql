@@ -23,6 +23,31 @@ async def categories(db: Session = Depends(get_db)):
     return list(map(lambda x: {"id": x.CategoryID, "name": x.CategoryName}, categories))
 
 
+@router.get("/categories/{id}")
+async def category(id: PositiveInt, db: Session = Depends(get_db)):
+    category = crud.get_category_by_id(db, id)
+    return category
+
+
+@router.put("/categories/{id}")
+async def put_category(id: PositiveInt, cat: schemas.CategoryUpdater, db: Session = Depends(get_db)):
+    category = crud.get_category_by_id(db, id)
+    if category is None:
+        raise HTTPException(status_code=404)
+    return crud.update_category(db, id, cat)
+
+
+@router.post("/categories", status_code=201)
+async def create_category(cat: schemas.CategoryCreator, db: Session = Depends(get_db)):
+    new_cat_id = crud.get_last_cat_id(db).CategoryID + 1
+    return crud.create_category(db = db, cat = cat, id = new_cat_id)
+
+
+@router.delete("/categories/{id}")
+async def delete_category(id: PositiveInt, db: Session = Depends(get_db)):
+    return crud.delete_category(db=db, id=id)
+
+
 @router.get("/customers")
 async def customers(db: Session = Depends(get_db)):
     customers = crud.get_all_customers(db)
@@ -71,7 +96,7 @@ async def get_employees(limit: Optional[int] = 0,
 async def products_orders(id: PositiveInt, db: Session = Depends(get_db)):
     product_orders = crud.get_product_orders(db, id)
     return list(map(lambda x: {"id": x.OrderID, "customer": x.CompanyName, "quantity": x.Quantity,
-                               "total_price": x.Quantity * x.UnitPrice * (1-x.Discount)}, product_orders))
+                               "total_price": x.Quantity * x.UnitPrice * (1 - x.Discount)}, product_orders))
 
 
 @router.get("/products_extended")

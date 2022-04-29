@@ -39,6 +39,7 @@ class Suppliers(BaseModel):
 class Category(BaseModel):
     CategoryID: int
     CategoryName: str
+    Description: str
 
     class Config:
         orm_mode = True
@@ -53,6 +54,22 @@ class Product(BaseModel):
     class Config:
         orm_mode = True
 
+
+class CategoryUpdater(BaseModel):
+    CategoryID: int
+    CategoryName: Optional[str]
+    Description: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
+class CategoryCreator(BaseModel):
+    CategoryName: Optional[str]
+    Description: Optional[str]
+
+    class Config:
+        orm_mode = True
 
 class SupplierCreator(BaseModel):
     CompanyName: str

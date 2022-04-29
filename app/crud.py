@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -9,6 +10,34 @@ def get_all_customers(db: Session):
 
 def get_all_categories(db: Session):
     return db.query(models.Category).all()
+
+
+def get_category_by_id(db: Session, id: int):
+    return db.query(models.Category).filter(models.Category.CategoryID == id).first()
+
+
+def update_category(db: Session, id: int, category):
+    changes = [change for change in category]
+    changes_dict = {}
+    for change in changes:
+        if change[1] is not None:
+            changes_dict[change[0]] = change[1]
+    dbb = db.query(models.Category).filter(models.Category.CategoryID == id).first()
+
+    if "CategoryID" in changes_dict.keys(): dbb.CategoryID = changes_dict["CategoryID"]
+    if "CategoryName" in changes_dict.keys(): dbb.CategoryName = changes_dict["CategoryName"]
+    if "Description" in changes_dict.keys(): dbb.Description = changes_dict["Description"]
+    db.commit()
+    db.refresh(dbb)
+    return dbb
+
+
+def create_category(db: Session, cat: schemas.CategoryCreator, id: int):
+    db_cat = models.Category(CategoryID = id ,CategoryName=cat.CategoryName, Description=cat.Description)
+    db.add(db_cat)
+    db.commit()
+    db.refresh(db_cat)
+    return db_cat
 
 
 def get_all_products(db: Session):
@@ -114,4 +143,16 @@ def update_supplier(supp_id: int, db: Session, supp: schemas.SupplierUpdater):
 def delete_supplier(supp_id: int, db: Session):
     supp_del = db.query(models.Supplier).filter(models.Supplier.SupplierID == supp_id).first()
     db.delete(supp_del)
+    db.commit()
+
+
+def get_last_cat_id(db: Session):
+    return db.query(models.Category.CategoryID).order_by(models.Category.CategoryID.desc()).first()
+
+
+def delete_category(db:Session, id:int):
+    cat_del = db.query(models.Category).filter(models.Category.CategoryID == id).first()
+    if cat_del is None:
+        raise HTTPException(status_code=404)
+    db.delete(cat_del)
     db.commit()
