@@ -136,7 +136,7 @@ async def get_products_by_supp(supp_id: PositiveInt, db: Session = Depends(get_d
     if db_supp is None or not db_supp:
         raise HTTPException(status_code=404)
     return [{'ProductID': product.ProductID, 'ProductName': product.ProductName,
-             'Category': {"CategoryID": product.CategoryID, 'CategoryName': product.CategoryName, },
+             'Category': {"CategoryID": product.CategoryID, 'CategoryName': product.CategoryName, 'Description': product.Description},
              'Discontinued': product.Discontinued, } for product in db_supp]
 
 

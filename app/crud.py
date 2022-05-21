@@ -95,7 +95,7 @@ def get_supplier(db: Session, supp_id: int):
 
 def get_products_by_supp(db: Session, supp_id: int):
     return db.query(models.Product.ProductID, models.Product.ProductName,
-                    models.Category.CategoryID, models.Category.CategoryName,
+                    models.Category.CategoryID, models.Category.CategoryName, models.Category.Description,
                     models.Product.Discontinued) \
         .join(models.Category, models.Product.CategoryID == models.Category.CategoryID) \
         .filter(models.Product.SupplierID == supp_id) \
