@@ -94,6 +94,9 @@ async def get_employees(limit: Optional[int] = 0,
 
 @router.get("/products/{id}/orders")
 async def products_orders(id: PositiveInt, db: Session = Depends(get_db)):
+    product = crud.get_product_by_id(db, id)
+    if product is None:
+        raise HTTPException(status_code=404)
     product_orders = crud.get_product_orders(db, id)
     return list(map(lambda x: {"id": x.OrderID, "customer": x.CompanyName, "quantity": x.Quantity,
                                "total_price": x.Quantity * x.UnitPrice * (1 - x.Discount)}, product_orders))
